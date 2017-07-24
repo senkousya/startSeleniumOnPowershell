@@ -4,13 +4,13 @@
 
 - [SeleniumHQ](http://docs.seleniumhq.org/)
 
-## 🔰githubのリポジトリとか
+## 🔰Seleniumのgithubリポジトリとかユーザマニュアルとか
 
 - [github SeleniumHQ/selenium](https://github.com/SeleniumHQ/selenium)
 - [User Manual](http://docs.seleniumhq.org/docs/)
 - [New Handbook (work in progress)](https://seleniumhq.github.io/docs/)
 
-## 🔰APIドキュメント
+## 🔰各言語のAPIドキュメントへのリンク
 
 - [C# API DOCUMENT](http://seleniumhq.github.io/selenium/docs/api/dotnet/)
 - [JavaScript API DOCUMENT](http://seleniumhq.github.io/selenium/docs/api/javascript/)
@@ -21,10 +21,12 @@
 ## 🔰Seleniumとは
 
 - CIツール
-- webブラウザのコントロールができる
+- ブラウザのコントロールができる
 - 対応言語はJava, C#, Python, Ruby, Perl, PHP
 - webのUIテスト自動化によく使われているらしい
-- なんか過去の経緯から色々種類があるけれど、とりえあずwebdriverを使えばよさそう
+- なんか過去の経緯から色々種類があるけれど、とりえあずSelenium WebDriverを使えばよさそう
+
+サポートしている環境や言語、ブラウザの詳細については[SeleniumHQ - Platforms Supported by Selenium](http://www.seleniumhq.org/about/platforms.jsp#browsers)を参照
 
 ## 🔰PowershellからSeleniumを触る？
 
@@ -37,15 +39,19 @@ C#用と書いてる.NetのdllをPowershellからも利用出来るのでPowersh
 今回試した環境
 
 - 操作するブラウザはchrome
+- OSはwindows10
 - PowershellのVersionは5.1.14393.1480を利用
+- ローカルマシンでクライアントからwebdriverを直接使う（Selenium Standalone Serverは使用しない）
 
 [Selenium - download](http://www.seleniumhq.org/download/)
 
-Selenium Client & WebDriver Language Bindings の C# をダウンロード
+### 🔰Selenium Client & WebDriver Language Bindings の C# をダウンロード
 
 ![](image/selenium.setup.download.step001.png)
 
-Third Party Drivers, Bindings, and Plugins の Google Chrome Driverからダウンロードページに飛べるのでダウンロード
+### 🔰Google Chrome Driverのダンロード
+
+Third Party Drivers, Bindings, and Plugins の Google Chrome Driverからダウンロードページに飛べるので利用環境のあった物をダウンロード
 
 ![](image/selenium.setup.download.step002.png)
 
@@ -77,13 +83,15 @@ chromedriver_win32.zip
 
 今回はwebサイトからダウンロードして導入しましたが、NuGetとかにパッケージが存在するようなのそちらで導入しても問題ないです。
 
-### 🔰Seleniumのリファレンスガイド
+ダウンロードページにあるSelenium Standalone Serverは複数のマシンでリモートにwebdriverに実行を書ける時に必要そう。ローカルマシンで実行を行う場合は基本必要なさそう。
 
-ダウンロードしたファイルの中に、WebDriver.chmファイルがありますが。
+## 🔰Seleniumのリファレンスガイド
 
+ダウンロードしたファイルの中に、WebDriver.chmファイルがあり。
 各クラスで用意されている機能や使い方が記載されているのでこれを見て実装していけばOK。
+
 もしくは上にも書きましたがAPIドキュメントへのリンクが書いてあるのでこれを見て下さい。
-（githubのリポジトリのreadme.mdに各言語のドキュメントへのリンクがあったのでがこれを記載している）
+（githubリポジトリのreadme.mdに各言語のドキュメントへのリンクがあったのでがこれを記載している）
 
 今回利用しませんがSelenium.WebDriverBackedSelenium.dllの説明も書いてあります。
 
@@ -199,7 +207,7 @@ $chromeDriver.findElementByName("q").submit()
 #chromeDriverとSystem.TimeSpanスパンでタイムアウトまでの時間を指定している
 $webDriverWait = New-Object OpenQA.Selenium.Support.UI.WebDriverWait($chromeDriver , (New-TimeSpan -Seconds 10))
 
-#WebDriverWaitクラスはuntilメソッドにOpenQA.Selenium.Support.UI.ExpectedConditionsを渡して上げるとタイムアウトまで待ってくれる
+#WebDriverWaitクラスはuntilメソッドにOpenQA.Selenium.Support.UI.ExpectedConditionsを渡してあげると条件を満たすまで待ってくれる。
 #TitleContainsは指定して文字列がタイトルに含まれるまで待機
 #submit後、タイトルに検索文字列が含まれるまで待機
 $webDriverWait.until([OpenQA.Selenium.Support.UI.ExpectedConditions]::TitleContains("HelloWorld"))
@@ -214,6 +222,39 @@ WebDriverWait　と　ExpectedConditions については上記ドキュメント
 
 今回はTitleContainsを利用したが、他にも色々な条件でwaitを書ける事が出来るのでドキュメンを見れば幸せになれるかも！？
 
+## 🔰Part4.ブラウザの終了と破棄
+
+closeとdisposeを使ってchromeDriverの終了処理
+
+```Powershell
+
+$webDriverDllPath = "C:\tools\selenium\WebDriver.dll"
+$WebDriverSupportDllPath = "C:\tools\selenium\WebDriver.Support.dll"
+$chromeDriverDirPath = "C:\tools\selenium\"
+
+#dll読み込み
+Add-Type -Path $webDriverDllPath
+Add-Type -Path $WebDriverSupportDllPath
+
+#chrome起動
+$chromeDriver = New-Object OpenQA.Selenium.Chrome.ChromeDriver($chromeDriverDirPath)
+
+#chromeDriveのプロセスが起動していくことの確認
+Get-Process chromedriver
+
+#5秒待機
+Start-Sleep -Seconds 5
+
+#ブラウザを閉じる & 破棄
+$chromeDriver.quit()
+
+#プロセスが終了していることの確認
+Get-Process chromedriver
+
+```
+
 ## 🔰総評
 
-色々と出来るようですが、作り込もうとするとそこそこ時間が取られるので、ある程度利用が見込まれる物を作り込んでいくのが良さそうですね。
+色々と出来るようですが作り込もうとするとそこそこ時間が取られるので、ある程度利用が見込まれる物を作り込んでいくのが良さそうですね。
+
+Sikuli(画像認識を使ったGUI操作ツール)と組み合わせて利用されている例もあるみたいですね。
