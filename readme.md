@@ -51,8 +51,7 @@ C#用と書いてる.NetのdllをPowershellからも利用出来るのでPowersh
 
 ### 🔰Google Chrome Driverのダンロード
 
-Third Party Drivers, Bindings, and Plugins の Google Chrome Driverからダウンロードページに飛べるので利用環境のあった物をダウンロード
-
+Third Party Drivers, Bindings, and Plugins の Google Chrome Driverからダウンロードページに飛べるので利用環境のあった物をダウンロード  
 ![](image/selenium.setup.download.step002.png)
 
 ダウンロードしたファイルを適当な場所に解凍する。
@@ -71,14 +70,18 @@ chromedriver_win32.zip
     - chromedriver.exe
 
 なお下記のようにセキュリティの所でブロックされている場合。
-ファイルの読み込みがブロックされて正常に動かないためチェックボックをいれて解除する。
+ファイルの読み込みがブロックされて正常に動かないためそれぞれブロックの解除にチェックをいれて制限解除を行う。  
 
+▶WebDriver.chmのブロックの解除
 ![](image/selenium.setup.block.step001.png)
 
+▶WebDriver.dllのブロックの解除
 ![](image/selenium.setup.block.step002.png)
 
+▶WebDriver.Support.dllのブロックの解除
 ![](image/selenium.setup.block.step003.png)
 
+▶chromedriver.exeのブロックの解除
 ![](image/selenium.setup.block.step004.png)
 
 今回はwebサイトからダウンロードして導入しましたが、NuGetとかにパッケージが存在するようなのそちらで導入しても問題ないです。
@@ -162,8 +165,7 @@ $inputBox.SendKeys("HelloWorld by findElementById")
 
 chromeブラウザの開発者モードとかで要素を確認すると便利。
 
-google.co.jpの検索ボックスの name は q , id は lst-ib
-
+google.co.jpの検索ボックスの name は q , id は lst-ib  
 ![](image/selenium.part2.step001.png)
 
 上記のような感じでchromeが起動した後に、名前やidを元に要素を取得し。
